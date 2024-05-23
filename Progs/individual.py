@@ -148,7 +148,7 @@ def main(command_line=None):
     # Загрузить маршруты из файла, если файл существует.
     if os.path.exists(args.filename):
         routes = import_json(args.filename)
-    
+
     elif args.command != "import":
         # Создать пустой файл, если он не существует при любой команде, кроме "import"
         with open(args.filename, 'w', encoding='utf-8') as file:
