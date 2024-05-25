@@ -115,30 +115,6 @@ def main(command_line=None):
         help="Показать список маршрутов"
     )
 
-    # Субпарсер для экспорта маршрутов.
-    export_parser = subparsers.add_parser(
-        "export",
-        parents=[file_parser],
-        help="Экспортировать маршруты в JSON-файл"
-    )
-    export_parser.add_argument(
-        "export_file",
-        action="store",
-        help="Имя файла для экспорта"
-    )
-
-    # Субпарсер для импорта маршрутов.
-    import_parser = subparsers.add_parser(
-        "import",
-        parents=[file_parser],
-        help="Импортировать маршруты из JSON-файла"
-    )
-    import_parser.add_argument(
-        "import_file",
-        action="store",
-        help="Имя файла для импорта"
-    )
-
     # Разбор аргументов командной строки.
     args = parser.parse_args(command_line)
 
@@ -149,11 +125,6 @@ def main(command_line=None):
     if os.path.exists(args.filename):
         routes = import_json(args.filename)
 
-    elif args.command != "import":
-        # Создать пустой файл, если он не существует при любой команде, кроме "import"
-        with open(args.filename, 'w', encoding='utf-8') as file:
-            json.dump([], file)
-
     # Добавить маршрут.
     if args.command == "add":
         add_route(routes, args.first, args.second)
@@ -162,15 +133,6 @@ def main(command_line=None):
     # Показать список маршрутов.
     elif args.command == "list":
         list_of_routes(routes)
-
-    # Экспортировать маршруты в файл.
-    elif args.command == "export":
-        export_to_json(args.export_file, routes)
-
-    # Импортировать маршруты из файла.
-    elif args.command == "import":
-        routes = import_json(args.import_file)
-        export_to_json(args.filename, routes)
 
 
 if __name__ == '__main__':
