@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import sys
 import os.path
 
 
@@ -18,6 +19,7 @@ def add_route(routes, first, second):
             'second': second,
         }
     )
+    return routes
 
 
 def export_to_json(file, routes_list):
@@ -61,16 +63,6 @@ def list_of_routes(roadway):
         print("Список маршрутов пуст")
 
 
-def help():
-    print('\nСписок команд:')
-    print('help - Вывести этот список')
-    print('add - Добавить маршрут')
-    print('list - Показать список маршрутов')
-    print('exit - Выйти из программы')
-    print('export - Экспортировать данные в JSON-файл')
-    print('import (имя файла) - Импортировать данные')
-
-
 def main(command_line=None):
     # Родительский парсер для определения имени файла.
     file_parser = argparse.ArgumentParser(add_help=False)
@@ -108,26 +100,31 @@ def main(command_line=None):
         help="Место прибытия"
     )
 
-    # Субпарсер для отображения всех маршрутов.
-    display_parser = subparsers.add_parser(
+    list_parser = subparsers.add_parser(
         "list",
         parents=[file_parser],
-        help="Показать список маршрутов"
+        help="Показать данные из JSON-файла"
     )
 
     # Разбор аргументов командной строки.
     args = parser.parse_args(command_line)
 
-    # Список маршрутов
-    routes = []
-
-    # Загрузить маршруты из файла, если файл существует.
+    # Загрузить маршруты, если файл существует
+    fill = False
     if os.path.exists(args.filename):
         routes = import_json(args.filename)
+    else:
+        routes = []
 
     # Добавить маршрут.
     if args.command == "add":
         add_route(routes, args.first, args.second)
+        fill = True
+
+    if args.command == "list":
+        import_json(args.filename)
+
+    if fill:
         export_to_json(args.filename, routes)
 
     # Показать список маршрутов.
